@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,4 +30,30 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDTO> methodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex){
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                "Type de paramètre invalide",
+                "La valeur fournie dans l'URL n'est pas du bon type",
+                400,
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDTO);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> exception(Exception ex){
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                "Erreur interne du serveur",
+                "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+                500,
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDTO);
+    }
+
+
 }
