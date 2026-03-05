@@ -3,6 +3,7 @@ package com.ali.backend.product_management.controllers;
 import com.ali.backend.product_management.dtos.ProductRequestDTO;
 import com.ali.backend.product_management.dtos.ProductResponseDTO;
 import com.ali.backend.product_management.entities.Product;
+import com.ali.backend.product_management.exceptions.ResourceNotFoundException;
 import com.ali.backend.product_management.mappers.ProductMapper;
 import com.ali.backend.product_management.service.ProductService;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class ProductController {
         return productService.findProductById(id)
                 .map(productMapper::responseDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Le produit avec l'ID " + id + " n'existe pas."));
     }
 
     @PostMapping
@@ -57,11 +58,7 @@ public class ProductController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO productRequestDTO){
-        Optional<Product> optionalProduct = productService.findProductById(id);
-        if (optionalProduct.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        Product existingProduct = optionalProduct.get();
+        Product existingProduct = productService.findProductById(id).orElseThrow(()-> new ResourceNotFoundException("Produit introuvable"));
         productMapper.updateEntityFromDto(productRequestDTO, existingProduct);
         Product updatedProduct = productService.updateProduct(existingProduct);
         ProductResponseDTO responseDTO = productMapper.responseDTO(updatedProduct);

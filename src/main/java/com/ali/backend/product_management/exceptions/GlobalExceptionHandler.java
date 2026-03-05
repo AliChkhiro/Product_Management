@@ -55,5 +55,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDTO);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> ResourceNotFound(ResourceNotFoundException ex){
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                "Ressource introuvable",
+                ex.getMessage(),
+                404,
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDTO);
+    }
+
 
 }
