@@ -8,6 +8,10 @@ import com.ali.backend.product_management.mappers.ProductMapper;
 import com.ali.backend.product_management.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +35,13 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(){
-        List<ProductResponseDTO> responseDTOList = productService.findAllProducts()
-                .stream()
-                .map(productMapper::responseDTO)
-                .toList();
-        return ResponseEntity.ok(responseDTOList);
+    public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(@PageableDefault(page = 0,
+            size = 5,
+            sort = "price",
+            direction = Sort.Direction.ASC) Pageable pageable){
+        Page<Product> productPage = productService.findAllProducts(pageable);
+        Page<ProductResponseDTO> responseDTOPage = productPage.map(productMapper::responseDTO);
+        return ResponseEntity.ok(responseDTOPage);
     }
 
     // 1 - map :Product → ProductResponseDTO

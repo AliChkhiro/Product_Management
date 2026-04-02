@@ -2,10 +2,10 @@ package com.ali.backend.product_management.service;
 
 import com.ali.backend.product_management.entities.Product;
 import com.ali.backend.product_management.repositories.ProductRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,8 +25,8 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> findAllProducts(Pageable page) {
+        return productRepository.findAll(page);
     }
 
     @Override
